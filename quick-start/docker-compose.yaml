@@ -8,6 +8,8 @@ version: '3.2'
 services:
   containerssh:
     image: containerssh/containerssh:0.4.1
+    read_only: true
+
     ports:
         # For security we only allow this demo to run on localhost.
       - 127.0.0.1:2222:2222
@@ -32,6 +34,12 @@ services:
     - type: bind
       source: /var/run/docker.sock
       target: /var/run/docker.sock
+    
+      # These are work directories that ContainerSSH needs to write runtime.
+      # Using memory backed mounts avoids the creation of unnamed docker volumes.
+    tmpfs:
+      - /var/secrets:size=10M
+      - /etc/containerssh:size=10M
 
     # We are changing the user back to root so we can access the Docker socket.
     # We don't recommend using this setting in production. Please take a look
